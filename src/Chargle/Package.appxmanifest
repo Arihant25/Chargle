@@ -7,12 +7,15 @@
   IgnorableNamespaces="uap uap5 rescap">
 
   <!--
-    Name and Publisher are replaced by the values the Store assigns when the app is reserved.
-    For a local test build they only have to match the certificate used to sign it.
+    These two are assigned by Partner Center when the app name is reserved, and they are not a
+    matter of taste. The Store rejects an upload whose identity does not match exactly, and the
+    package family name it checks against is derived from both of them together, so changing
+    either one breaks it. The publisher is a GUID rather than a readable name on purpose; the
+    human readable version lives in PublisherDisplayName below.
   -->
   <Identity
-    Name="Chargle"
-    Publisher="CN=Arihant Tripathy"
+    Name="ArihantTripathy.Chargle"
+    Publisher="CN=72BAF5FF-24DB-44E5-91AB-EF577484B99F"
     Version="1.0.0.0" />
 
   <Properties>
