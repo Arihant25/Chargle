@@ -30,6 +30,18 @@ jobs:
         with:
           global-json-file: global.json
 
+      # Zip names carry the version, so a downloaded file still says what it is a year later.
+      # Run by hand off a branch and there is no tag to read, hence the fallback.
+      - name: Work out the version
+        id: version
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            echo "number=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          else
+            echo "number=dev" >> "$GITHUB_OUTPUT"
+          fi
+
       # The wav files and icons are committed, but regenerating them here proves the generators
       # still produce what is checked in rather than quietly drifting away from it.
       - name: Regenerate sounds and icons
@@ -63,12 +75,12 @@ jobs:
         shell: pwsh
         run: |
           Compress-Archive -Path build/portable-${{ matrix.rid }}/* `
-            -DestinationPath build/Chargle-${{ matrix.rid }}.zip
+            -DestinationPath build/Chargle-${{ steps.version.outputs.number }}-${{ matrix.rid }}.zip
 
       - uses: actions/upload-artifact@v4
         with:
           name: Chargle-${{ matrix.rid }}
-          path: build/Chargle-${{ matrix.rid }}.zip
+          path: build/Chargle-${{ steps.version.outputs.number }}-${{ matrix.rid }}.zip
 
   release:
     needs: build
@@ -81,7 +93,9 @@ jobs:
           path: artifacts
           merge-multiple: true
 
+      # No generate_release_notes here on purpose. It replaces the body of the release, which
+      # would throw away notes written by hand. Naming the zips the same as the ones attached
+      # manually means this replaces them rather than leaving two copies of each.
       - uses: softprops/action-gh-release@v2
         with:
           files: artifacts/*.zip
-          generate_release_notes: true
