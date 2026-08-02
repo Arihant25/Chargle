@@ -1,0 +1,11 @@
+# Blank issues stay on. Not everything fits a template, and turning them off
+# tends to mean the report never gets written at all.
+blank_issues_enabled: true
+
+contact_links:
+  - name: Add your own sound pack
+    url: https://github.com/Arihant25/Chargle#using-your-own-sounds
+    about: Drop a pair of files in the sounds folder. No issue needed.
+  - name: Question about how something works
+    url: https://github.com/Arihant25/Chargle/discussions
+    about: Ask here rather than opening a bug, if nothing is actually broken.
