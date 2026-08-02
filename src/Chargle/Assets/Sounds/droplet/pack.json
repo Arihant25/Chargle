@@ -1,0 +1,8 @@
+{
+  "id": "droplet",
+  "name": "Droplet",
+  "description": "A single drop of water. Sweeps up when the cable lands and down when it leaves.",
+  "author": "Chargle",
+  "license": "MIT",
+  "generated": true
+}

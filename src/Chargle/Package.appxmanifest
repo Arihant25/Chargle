@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap uap5 rescap">
+
+  <!--
+    Name and Publisher are replaced by the values the Store assigns when the app is reserved.
+    For a local test build they only have to match the certificate used to sign it.
+  -->
+  <Identity
+    Name="Chargle"
+    Publisher="CN=Arihant Tripathy"
+    Version="1.0.0.0" />
+
+  <Properties>
+    <DisplayName>Chargle</DisplayName>
+    <PublisherDisplayName>Arihant Tripathy</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+    <Description>Hear when your laptop starts and stops charging.</Description>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19041.0" MaxVersionTested="10.0.26100.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="en-us" />
+  </Resources>
+
+  <Applications>
+    <Application Id="App" Executable="Chargle.exe" EntryPoint="$targetentrypoint$">
+
+      <uap:VisualElements
+        DisplayName="Chargle"
+        Description="Hear when your laptop starts and stops charging."
+        BackgroundColor="transparent"
+        Square150x150Logo="Assets\Square150x150Logo.png"
+        Square44x44Logo="Assets\Square44x44Logo.png">
+        <uap:DefaultTile
+          Wide310x150Logo="Assets\Wide310x150Logo.png"
+          Square71x71Logo="Assets\Square71x71Logo.png"
+          Square310x310Logo="Assets\Square310x310Logo.png" />
+        <uap:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="transparent" />
+        <uap:LockScreen BadgeLogo="Assets\LockScreenLogo.png" Notification="badge" />
+      </uap:VisualElements>
+
+      <Extensions>
+        <!--
+          Declaring startup here rather than writing a Run key is what puts Chargle in
+          Settings > Apps > Startup, where the user can turn it off in the place they would
+          look for it. It is registered disabled: the app asks for it only if the user does.
+        -->
+        <uap5:Extension
+          Category="windows.startupTask"
+          Executable="Chargle.exe"
+          EntryPoint="$targetentrypoint$">
+          <uap5:StartupTask
+            TaskId="ChargleStartupTask"
+            Enabled="false"
+            DisplayName="Chargle" />
+        </uap5:Extension>
+      </Extensions>
+
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+
+</Package>

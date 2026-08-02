@@ -1,0 +1,29 @@
+# Build output
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+# build/ holds generated packages, but the packaging script itself is source.
+build/*
+!build/Package.ps1
+
+# Packaging output
+*.msix
+*.msixbundle
+*.appx
+*.appxbundle
+*.appxupload
+AppPackages/
+*.pfx
+*.cer
+
+# The sound packs and icons are generated, but they are committed on purpose: someone cloning
+# this should be able to build and run without first running the tools. Regenerate them with
+#   dotnet run --project tools/SoundForge
+#   dotnet run --project tools/IconForge
+
+# Local scratch
+*.log
+.idea/

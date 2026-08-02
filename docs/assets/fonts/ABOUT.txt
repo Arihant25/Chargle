@@ -1,0 +1,16 @@
+The three typefaces used on this site are served from here rather than from a
+font CDN, so visiting the page does not tell anyone else that you were here.
+
+Anybody, by Eli Heuer and contributors.
+Variable, used for headings. SIL Open Font License 1.1.
+https://fonts.google.com/specimen/Anybody
+
+Martian Mono, by Evil Martians and Roman Shamin.
+Variable, used for labels and readouts. SIL Open Font License 1.1.
+https://fonts.google.com/specimen/Martian+Mono
+
+Author, by Indian Type Foundry.
+Used for body text. ITF Free Font Licence.
+https://www.fontshare.com/fonts/author
+
+Only the Latin subset of each is included.

@@ -1,0 +1,8 @@
+{
+  "id": "tick",
+  "name": "Tick",
+  "description": "One frame of sound. The least this app can possibly say while still saying it.",
+  "author": "Chargle",
+  "license": "MIT",
+  "generated": true
+}

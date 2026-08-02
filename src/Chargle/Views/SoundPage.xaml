@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Chargle.Views.SoundPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Chargle.Controls"
+    xmlns:vm="using:Chargle.ViewModels"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,4,20">
+        <StackPanel Spacing="4">
+
+            <TextBlock Style="{StaticResource MutedTextStyle}" Margin="2,0,0,8"
+                       Text="Each pack is a pair. Connecting rises, disconnecting falls." />
+
+            <ListView
+                ItemsSource="{x:Bind Vm.Packs}"
+                SelectedItem="{x:Bind Vm.SelectedPack, Mode=TwoWay}"
+                SelectionMode="Single"
+                IsItemClickEnabled="False">
+
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
+                        <Setter Property="Padding" Value="12,10,10,10" />
+                        <Setter Property="Margin" Value="0,0,0,4" />
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:PackViewModel">
+                        <Grid ColumnDefinitions="*,88,Auto" ColumnSpacing="12">
+
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="1">
+                                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind Name}" />
+                                <TextBlock
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    TextWrapping="Wrap"
+                                    Text="{x:Bind Description}" />
+                            </StackPanel>
+
+                            <controls:WaveformView
+                                Grid.Column="1"
+                                Height="26"
+                                VerticalAlignment="Center"
+                                Opacity="0.5"
+                                Samples="{x:Bind Samples, Mode=OneWay}"
+                                Stroke="{ThemeResource TextFillColorSecondaryBrush}" />
+
+                            <Button
+                                Grid.Column="2"
+                                Width="36" Height="32" Padding="0"
+                                VerticalAlignment="Center"
+                                Click="OnPreviewPair"
+                                AutomationProperties.Name="{x:Bind PlayTooltip, Mode=OneWay}"
+                                ToolTipService.ToolTip="{x:Bind PlayTooltip, Mode=OneWay}">
+                                <FontIcon FontSize="12" Glyph="{x:Bind PlayGlyph, Mode=OneWay}" />
+                            </Button>
+
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <Border Style="{StaticResource CardStyle}" Margin="0,8,0,0">
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+                    <FontIcon Grid.Column="0" FontSize="16" Glyph="&#xE767;" VerticalAlignment="Center" />
+                    <Slider
+                        Grid.Column="1"
+                        Minimum="0" Maximum="100" StepFrequency="1"
+                        VerticalAlignment="Center"
+                        Header="Volume"
+                        Value="{x:Bind Vm.Volume, Mode=TwoWay}" />
+                    <TextBlock
+                        Grid.Column="2"
+                        VerticalAlignment="Bottom" Margin="0,0,0,10"
+                        MinWidth="38" TextAlignment="Right"
+                        Style="{StaticResource MutedTextStyle}"
+                        Text="{x:Bind Percent(Vm.Volume), Mode=OneWay}" />
+                </Grid>
+            </Border>
+
+            <Expander
+                Margin="0,4,0,0"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Stretch"
+                Header="Use your own sounds">
+                <StackPanel Spacing="12" Padding="0,4,0,4">
+                    <TextBlock
+                        Style="{StaticResource MutedTextStyle}"
+                        Text="Pick any wav, mp3, m4a, flac, ogg, wma or aiff. The file is copied into your sounds folder and becomes a pack called My sounds, so it keeps working if you move or delete the original." />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Click="OnPickCustomPlug" Content="Choose connect sound" />
+                        <Button Click="OnPickCustomUnplug" Content="Choose disconnect sound" />
+                    </StackPanel>
+                    <!-- OneTime on purpose. The page refreshes these by calling Bindings.Update
+                         after an import, so there is nothing to subscribe to. -->
+                    <TextBlock Style="{StaticResource MutedTextStyle}" Text="{x:Bind ImportStatus}" Visibility="{x:Bind ShowIfText(ImportStatus)}" />
+                    <HyperlinkButton Padding="0,2,0,2" Click="OnOpenSoundsFolder" Content="Open the sounds folder" />
+                </StackPanel>
+            </Expander>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

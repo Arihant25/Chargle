@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="Chargle.Views.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <Grid x:Name="TitleBar" Grid.Row="0" Height="44" Padding="16,0,0,0">
+            <TextBlock
+                VerticalAlignment="Center"
+                HorizontalAlignment="Left"
+                Style="{StaticResource CaptionTextBlockStyle}"
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                Text="Chargle" />
+        </Grid>
+
+        <muxc:NavigationView
+            x:Name="Nav"
+            Grid.Row="1"
+            PaneDisplayMode="Left"
+            OpenPaneLength="168"
+            IsBackButtonVisible="Collapsed"
+            IsPaneToggleButtonVisible="False"
+            IsSettingsVisible="False"
+            SelectionChanged="OnNavigate">
+
+            <muxc:NavigationView.MenuItems>
+                <muxc:NavigationViewItem Content="Sound" Tag="sound">
+                    <muxc:NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE767;" />
+                    </muxc:NavigationViewItem.Icon>
+                </muxc:NavigationViewItem>
+                <muxc:NavigationViewItem Content="On screen" Tag="screen">
+                    <muxc:NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE7F4;" />
+                    </muxc:NavigationViewItem.Icon>
+                </muxc:NavigationViewItem>
+                <muxc:NavigationViewItem Content="Rules" Tag="rules">
+                    <muxc:NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE713;" />
+                    </muxc:NavigationViewItem.Icon>
+                </muxc:NavigationViewItem>
+
+                <muxc:NavigationViewItemSeparator />
+
+                <muxc:NavigationViewItem Content="About" Tag="about">
+                    <muxc:NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE946;" />
+                    </muxc:NavigationViewItem.Icon>
+                </muxc:NavigationViewItem>
+            </muxc:NavigationView.MenuItems>
+
+            <!--
+                The status card is pinned above the page rather than living on one of them.
+                What the machine is doing right now is the reason the app exists, so it should
+                not be something you have to navigate to.
+            -->
+            <!--
+                The top gap lives on this container rather than on the status card, because the
+                card is hidden on About and the spacing has to survive that.
+            -->
+            <Grid RowDefinitions="Auto,*" Padding="4,12,20,0">
+
+                <Border x:Name="StatusCard" Grid.Row="0" Style="{StaticResource CardStyle}" Padding="18,15,16,15" Margin="0,0,0,12">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="15">
+
+                        <Border
+                            Grid.Column="0"
+                            Width="42" Height="42"
+                            CornerRadius="12"
+                            VerticalAlignment="Center"
+                            Background="{x:Bind HeroBackground(Vm.IsPluggedIn), Mode=OneWay}">
+                            <Viewbox Width="18" Height="20">
+                                <Path Data="{StaticResource BoltGeometry}" Fill="{x:Bind HeroForeground(Vm.IsPluggedIn), Mode=OneWay}" />
+                            </Viewbox>
+                        </Border>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{x:Bind Vm.StatusHeadline, Mode=OneWay}" />
+                            <TextBlock Style="{StaticResource MutedTextStyle}" Text="{x:Bind Vm.StatusDetail, Mode=OneWay}" />
+                        </StackPanel>
+
+                        <Button
+                            Grid.Column="2"
+                            VerticalAlignment="Center"
+                            Click="OnToggleMute"
+                            Content="{x:Bind Vm.MuteLabel, Mode=OneWay}" />
+
+                    </Grid>
+                </Border>
+
+                <Frame x:Name="Shell" Grid.Row="1" />
+
+            </Grid>
+        </muxc:NavigationView>
+
+    </Grid>
+</Window>

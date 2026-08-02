@@ -1,0 +1,19 @@
+# Normalise line endings so a checkout on another machine does not show the whole tree as
+# modified. Text is stored with LF and checked out however the platform prefers.
+* text=auto
+
+*.cs      text diff=csharp
+*.xaml    text
+*.csproj  text
+*.slnx    text
+*.json    text
+*.md      text
+*.yml     text
+*.ps1     text eol=crlf
+*.manifest       text
+*.appxmanifest   text
+
+# Binary, so git does not try to be clever with them.
+*.wav  binary
+*.png  binary
+*.ico  binary

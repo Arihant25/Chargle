@@ -1,0 +1,87 @@
+name: Release
+
+# Tag a commit with v1.2.3 and push it; this builds both architectures and attaches the zips
+# to a GitHub release. Also runnable by hand from the Actions tab to check it still works.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - rid: win-x64
+            platform: x64
+          - rid: win-arm64
+            platform: ARM64
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      # The wav files and icons are committed, but regenerating them here proves the generators
+      # still produce what is checked in rather than quietly drifting away from it.
+      - name: Regenerate sounds and icons
+        run: |
+          dotnet run --project tools/SoundForge -- src/Chargle/Assets/Sounds
+          dotnet run --project tools/IconForge -- src/Chargle/Assets
+
+      # Only the sounds are diffed. Their synthesis is deterministic by design, so any change
+      # here is a real one. The PNG encoder is not guaranteed to be byte identical across
+      # machines, and a spurious failure on an icon would be worse than no check at all.
+      - name: Fail if the generated sounds drifted
+        shell: bash
+        run: |
+          if [ -n "$(git status --porcelain src/Chargle/Assets/Sounds)" ]; then
+            echo "Generated sounds differ from what is committed:"
+            git status --porcelain src/Chargle/Assets/Sounds
+            echo "Run 'dotnet run --project tools/SoundForge' and commit the result."
+            exit 1
+          fi
+
+      - name: Publish portable
+        run: >
+          dotnet publish src/Chargle/Chargle.csproj
+          -c Release
+          -r ${{ matrix.rid }}
+          -p:Platform=${{ matrix.platform }}
+          -p:WindowsPackageType=None
+          -o build/portable-${{ matrix.rid }}
+
+      - name: Zip
+        shell: pwsh
+        run: |
+          Compress-Archive -Path build/portable-${{ matrix.rid }}/* `
+            -DestinationPath build/Chargle-${{ matrix.rid }}.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Chargle-${{ matrix.rid }}
+          path: build/Chargle-${{ matrix.rid }}.zip
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*.zip
+          generate_release_notes: true

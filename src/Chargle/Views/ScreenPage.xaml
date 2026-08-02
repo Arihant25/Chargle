@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Chargle.Views.ScreenPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:Chargle.ViewModels"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,4,20">
+        <StackPanel Spacing="4">
+
+            <TextBlock Style="{StaticResource MutedTextStyle}" Margin="2,0,0,8"
+                       Text="A panel that appears when the charger moves and fades on its own. It cannot be clicked and never takes focus." />
+
+            <Border Style="{StaticResource CardStyle}">
+                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+                    <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="Show it on screen" />
+                    <Button
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Click="OnPreview"
+                        IsEnabled="{x:Bind Vm.ShowVisualIndicator, Mode=OneWay}"
+                        Content="Show me" />
+                    <ToggleSwitch Grid.Column="2" Style="{StaticResource RowToggleStyle}" AutomationProperties.Name="Show the panel on screen" IsOn="{x:Bind Vm.ShowVisualIndicator, Mode=TwoWay}" />
+                </Grid>
+            </Border>
+
+            <Border Style="{StaticResource CardStyle}" Margin="0,4,0,0">
+                <StackPanel Spacing="14">
+
+                    <Grid ColumnDefinitions="*,190" ColumnSpacing="12">
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="1">
+                            <TextBlock Text="How much it says" />
+                            <TextBlock Style="{StaticResource MutedTextStyle}" Text="{x:Bind StyleDescription(Vm.IndicatorStyleIndex), Mode=OneWay}" />
+                        </StackPanel>
+                        <ComboBox
+                            Grid.Column="1"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Center"
+                            AutomationProperties.Name="How much the panel says" SelectedIndex="{x:Bind Vm.IndicatorStyleIndex, Mode=TwoWay}">
+                            <ComboBoxItem Content="Panel" />
+                            <ComboBoxItem Content="Compact" />
+                            <ComboBoxItem Content="Just the mark" />
+                        </ComboBox>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*,190" ColumnSpacing="12">
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="1">
+                            <TextBlock Text="Colour" />
+                            <TextBlock Style="{StaticResource MutedTextStyle}" Text="Used while the charger is connected. On battery it stays grey." />
+                        </StackPanel>
+                        <ComboBox
+                            Grid.Column="1"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Center"
+                            ItemsSource="{x:Bind Vm.AccentOptions}"
+                            AutomationProperties.Name="Panel colour" SelectedIndex="{x:Bind Vm.IndicatorAccentIndex, Mode=TwoWay}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="vm:AccentOption">
+                                    <StackPanel Orientation="Horizontal" Spacing="10">
+                                        <Ellipse Width="14" Height="14" VerticalAlignment="Center" Fill="{x:Bind Brush}" />
+                                        <TextBlock VerticalAlignment="Center" Text="{x:Bind Name}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*,190" ColumnSpacing="12">
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="1">
+                            <TextBlock Text="Where it appears" />
+                            <TextBlock Style="{StaticResource MutedTextStyle}" Text="Measured against the work area, so it clears the task bar wherever that is." />
+                        </StackPanel>
+                        <ComboBox
+                            Grid.Column="1"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Center"
+                            AutomationProperties.Name="Where the panel appears" SelectedIndex="{x:Bind Vm.IndicatorPlacementIndex, Mode=TwoWay}">
+                            <ComboBoxItem Content="Bottom centre" />
+                            <ComboBoxItem Content="Top centre" />
+                            <ComboBoxItem Content="Bottom right" />
+                            <ComboBoxItem Content="Top right" />
+                        </ComboBox>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*,190" ColumnSpacing="12">
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="1">
+                            <TextBlock Text="How long it stays" />
+                            <TextBlock Style="{StaticResource MutedTextStyle}" Text="{x:Bind Vm.IndicatorSecondsLabel, Mode=OneWay}" />
+                        </StackPanel>
+                        <Slider
+                            Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Minimum="0.8" Maximum="6" StepFrequency="0.1"
+                            AutomationProperties.Name="How long the panel stays on screen" Value="{x:Bind Vm.IndicatorSeconds, Mode=TwoWay}" />
+                    </Grid>
+
+                </StackPanel>
+            </Border>
+
+            <TextBlock Style="{StaticResource MutedTextStyle}" Margin="2,10,0,0"
+                       Text="The panel also stays hidden when Do Not Disturb is on, if that rule is switched on under Rules." />
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>
