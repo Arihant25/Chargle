@@ -2,7 +2,14 @@
 
 Chargle plays a sound when your laptop starts charging and another when it stops.
 
-There is a site at [arihant25.github.io/Chargle](https://arihant25.github.io/Chargle/) where you can hear every pack and try the on-screen panel before downloading anything.
+<a href="https://apps.microsoft.com/detail/9pp0t5vtmsc2">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/ms-store-light.svg">
+    <img src="docs/assets/ms-store-dark.svg" alt="Download Chargle from the Microsoft Store" height="44">
+  </picture>
+</a>
+
+Or hear every pack and try the on-screen panel first at [arihant25.github.io/Chargle](https://arihant25.github.io/Chargle/).
 
 That is it. Windows still does not have this built in, which is odd once you get used to having it. Chargle sits in the tray, watches the power source, and makes a small noise when the cable goes in or out. If you would rather not hear anything, it can show a little on-screen panel instead.
 
@@ -93,7 +100,13 @@ That is the whole format. Restart Chargle and the pack will show up in the list.
 
 ## Installing
 
-There is no Microsoft Store version yet.
+The [Microsoft Store](https://apps.microsoft.com/detail/9pp0t5vtmsc2) is the easiest way to get it. It is free, and updates arrive on their own.
+
+From a terminal, use winget:
+
+```bash
+winget install Arihant25.Chargle
+```
 
 For the portable build, download the zip from [Releases](../../releases), extract it anywhere, and run `Chargle.exe`. It is self-contained, so there is nothing else to install first. The trade-off is that the download is fairly large.
 

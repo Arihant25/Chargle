@@ -131,17 +131,28 @@
               is properly seated.
             </p>
             <div class="actions">
-              <a class="btn" href="https://github.com/Arihant25/Chargle/releases">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                  <path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5M4 19h16" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-                Download the zip
+              <a class="store-badge" href="https://apps.microsoft.com/detail/9pp0t5vtmsc2">
+                <img
+                  class="on-dark"
+                  src="assets/ms-store-light.svg"
+                  alt="Download Chargle from the Microsoft Store"
+                  width="161"
+                  height="44"
+                />
+                <img
+                  class="on-light"
+                  src="assets/ms-store-dark.svg"
+                  alt="Download Chargle from the Microsoft Store"
+                  width="161"
+                  height="44"
+                />
               </a>
               <a class="btn ghost" href="https://github.com/Arihant25/Chargle">Read the source</a>
             </div>
             <p class="hero-note">
-              Portable build for x64 and ARM64. Extract it anywhere and run it. Nothing to install first, no account,
-              no telemetry.
+              Free, and it updates itself. If you would rather not use the Store there is a portable zip on
+              <a href="https://github.com/Arihant25/Chargle/releases">Releases</a> for x64 and ARM64. Either way there
+              is no account and no telemetry.
             </p>
           </div>
 
@@ -490,12 +501,43 @@
 
           <div class="get up">
             <div class="card">
+              <h3>From the Microsoft Store</h3>
+              <p>
+                The short way in. Free, signed, and it keeps itself up to date, so you never have to come back here
+                for a newer version.
+              </p>
+              <a class="store-badge" href="https://apps.microsoft.com/detail/9pp0t5vtmsc2">
+                <img
+                  class="on-dark"
+                  src="assets/ms-store-light.svg"
+                  alt="Download Chargle from the Microsoft Store"
+                  width="161"
+                  height="44"
+                />
+                <img
+                  class="on-light"
+                  src="assets/ms-store-dark.svg"
+                  alt="Download Chargle from the Microsoft Store"
+                  width="161"
+                  height="44"
+                />
+              </a>
+            </div>
+
+            <div class="card">
+              <h3>From a terminal</h3>
+              <p>If you already live in a shell, winget will do the whole thing without you leaving it.</p>
+              <pre>winget install Arihant25.Chargle</pre>
+              <a class="btn ghost" href="https://github.com/microsoft/winget-pkgs/tree/master/manifests/a/Arihant25/Chargle">See the manifest</a>
+            </div>
+
+            <div class="card">
               <h3>The portable build</h3>
               <p>
                 Download the zip, extract it wherever you like, run Chargle.exe. It is self contained, so there is no
                 runtime to install first. That is also why the download is on the large side.
               </p>
-              <a class="btn" href="https://github.com/Arihant25/Chargle/releases">Releases on GitHub</a>
+              <a class="btn ghost" href="https://github.com/Arihant25/Chargle/releases">Releases on GitHub</a>
             </div>
 
             <div class="card">
@@ -505,15 +547,6 @@
 cd Chargle
 dotnet run --project src/Chargle</pre>
               <a class="btn ghost" href="https://github.com/Arihant25/Chargle">Browse the repository</a>
-            </div>
-
-            <div class="card">
-              <h3>From the Store</h3>
-              <p>
-                Not yet. The app is packaged and signed for it, but it is not listed. Until then the zip is the way
-                in.
-              </p>
-              <a class="btn ghost" href="privacy.html">What it does with your data</a>
             </div>
           </div>
         </div>

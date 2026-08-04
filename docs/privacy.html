@@ -86,6 +86,10 @@
         If you add your own sound packs they live in <code>%LOCALAPPDATA%\Chargle\Sounds</code> and stay exactly
         where you put them.
       </p>
+      <p>
+        The Store build is packaged, so Windows quietly redirects that folder into the app's own storage rather than
+        the plain one. Same two files, same contents, and they are removed when you uninstall.
+      </p>
 
       <h2>What it reads while it runs</h2>
       <p>
@@ -101,16 +105,24 @@
 
       <h2>The one thing it writes outside its own folder</h2>
       <p>
-        When you switch on <strong>Run at login</strong>, Chargle adds a single value under
+        When you switch on <strong>Run at login</strong>, the portable build adds a single value under
         <code>HKCU\Software\Microsoft\Windows\CurrentVersion\Run</code> pointing at the exe. Switching it off removes
         the value again. That is the whole of its footprint on the registry.
+      </p>
+      <p>
+        The Store build does not touch the registry at all. It registers a startup task with Windows instead, which
+        is why that version also shows up under Startup apps in Settings and can be turned off from there.
       </p>
 
       <h2>Removing it</h2>
       <p>
-        Quit from the tray menu, delete the folder you extracted, then delete <code>%LOCALAPPDATA%\Chargle</code> if
-        you want the settings gone as well. There is no uninstaller because there was no installer, and nothing is
-        left behind in the registry once Run at login is off.
+        If you installed it from the Store, uninstall it the way you would any other app, from Installed apps in
+        Settings. Everything it saved goes with it.
+      </p>
+      <p>
+        If you are running the portable build, quit from the tray menu, delete the folder you extracted, then delete
+        <code>%LOCALAPPDATA%\Chargle</code> if you want the settings gone as well. There is no uninstaller because
+        there was no installer, and nothing is left in the registry once Run at login is off.
       </p>
 
       <h2>This website</h2>
@@ -128,7 +140,10 @@
         Two things sit outside that. GitHub serves these pages and keeps ordinary server logs of requests, in the way
         every web host does, which is covered by the
         <a href="https://docs.github.com/site-policy/privacy-policies/github-privacy-statement">GitHub Privacy
-        Statement</a>. And the download button sends you to GitHub Releases, which is also GitHub.
+        Statement</a>. And the buttons that get you the app lead off this site, either to the Microsoft Store or to
+        GitHub Releases. What those two do with the visit is theirs to describe, under the
+        <a href="https://www.microsoft.com/privacy/privacystatement">Microsoft Privacy Statement</a> and the GitHub
+        one above.
       </p>
 
       <h2>Changes</h2>
