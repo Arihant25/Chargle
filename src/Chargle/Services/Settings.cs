@@ -1,20 +1,56 @@
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Windows.Storage;
 
 namespace Chargle.Services;
 
 public static class AppPaths
 {
     /// <summary>
-    /// %LOCALAPPDATA%\Chargle. Under MSIX this is transparently redirected into the package's
-    /// own storage, so the same code is correct packaged and unpackaged.
+    /// Where settings and user sound packs live, as a path that is true for everyone, not just
+    /// for us. See <see cref="Resolve"/> for why that distinction matters.
     /// </summary>
-    public static string DataDirectory { get; } = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "Chargle");
+    public static string DataDirectory { get; } = Resolve();
 
     public static string SettingsFile => Path.Combine(DataDirectory, "settings.json");
+
+    /// <summary>
+    /// Unpackaged this is simply %LOCALAPPDATA%\Chargle.
+    ///
+    /// Packaged it cannot be, and the reason is easy to miss: MSIX redirects our writes to
+    /// %LOCALAPPDATA%\Chargle into the package's private store, so reading and writing that path
+    /// works fine and the app looks correct. The redirection only applies inside the package
+    /// though. Hand the same string to Explorer, which runs outside it, and Explorer goes looking
+    /// for a folder that was never created and says the location is unavailable — which is what
+    /// "Open sounds folder" did on the Store build.
+    ///
+    /// So ask for the real location rather than the one that gets rewritten on our behalf. It is
+    /// the same physical folder the redirection was already using, so nothing moves and no
+    /// existing settings or imported sounds are lost.
+    /// </summary>
+    private static string Resolve()
+    {
+        if (PackageContext.IsPackaged)
+        {
+            try
+            {
+                // %LOCALAPPDATA%\X is redirected to <package>\LocalCache\Local\X, so this is
+                // exactly where our files have been all along.
+                return Path.Combine(ApplicationData.Current.LocalCacheFolder.Path, "Local", "Chargle");
+            }
+            catch (Exception ex)
+            {
+                // Fall through to the plain path. Reading and writing it still works under the
+                // redirection; only the Explorer button suffers, which beats not starting.
+                Debug.WriteLine($"Chargle: could not resolve the package data folder. {ex.Message}");
+            }
+        }
+
+        return Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "Chargle");
+    }
 }
 
 [JsonConverter(typeof(JsonStringEnumConverter<AppTheme>))]

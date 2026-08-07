@@ -196,17 +196,46 @@ public partial class App : Application
     }
 
     /// <summary>
-    /// Launched with --background by the run-at-login entry, or configured to start in the tray.
-    /// Either way there is nothing to show, which is the point of a tray app.
+    /// Whether this launch was Windows starting us at login rather than the user asking for the
+    /// app. At login there is nothing to show, which is the point of a tray app; a settings window
+    /// in your face every time you sign in is the fastest way to get an app uninstalled.
+    ///
+    /// Either signal means a login start, because the two kinds of build register for startup
+    /// differently: the portable one gets a Run key we control, the packaged one a StartupTask
+    /// we do not.
     /// </summary>
     private bool StartsHidden()
     {
+        if (!Settings.Current.StartHidden) return false;
+
         string[] argv = Environment.GetCommandLineArgs();
         bool requested = argv.Any(a =>
             a.Equals("--background", StringComparison.OrdinalIgnoreCase) ||
             a.Equals("/background", StringComparison.OrdinalIgnoreCase));
 
-        return requested && Settings.Current.StartHidden;
+        return requested || LaunchedByStartupTask();
+    }
+
+    /// <summary>
+    /// The packaged build's run-at-login is a StartupTask declared in the manifest, and a
+    /// StartupTask takes no arguments: there is nowhere to put --background. Windows says so in
+    /// the activation instead, so that is where we have to ask.
+    /// </summary>
+    private static bool LaunchedByStartupTask()
+    {
+        if (!PackageContext.IsPackaged) return false;
+
+        try
+        {
+            return AppInstance.GetCurrent().GetActivatedEventArgs().Kind == ExtendedActivationKind.StartupTask;
+        }
+        catch (Exception ex)
+        {
+            // Showing the window is the safe way to be wrong here. A window nobody asked for is a
+            // nuisance; an app that starts invisible when the user double-clicked it looks broken.
+            Debug.WriteLine($"Chargle: could not read the activation kind. {ex.Message}");
+            return false;
+        }
     }
 
     /// <summary>

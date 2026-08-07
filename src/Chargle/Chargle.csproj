@@ -32,7 +32,7 @@
     <WindowsAppSDKSelfContained Condition="'$(Configuration)' == 'Release'">true</WindowsAppSDKSelfContained>
     <SelfContained Condition="'$(Configuration)' == 'Release'">true</SelfContained>
 
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Authors>Chargle contributors</Authors>
     <Product>Chargle</Product>
     <Description>Hear when your laptop starts and stops charging.</Description>
