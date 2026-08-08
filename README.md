@@ -108,6 +108,8 @@ From a terminal, use winget, which installs the same Store build:
 winget install 9PP0T5VTMSC2
 ```
 
+`winget install Arihant25.Chargle` will fetch the portable zip instead, once [that manifest](https://github.com/microsoft/winget-pkgs/pull/411944) clears moderation.
+
 For the portable build, download the zip from [Releases](../../releases), extract it anywhere, and run `Chargle.exe`. It is self-contained, so there is nothing else to install first. The trade-off is that the download is fairly large.
 
 To run it from source, install the [.NET 10 SDK](https://dotnet.microsoft.com/download) and use:
