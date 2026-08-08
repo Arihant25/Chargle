@@ -102,10 +102,10 @@ That is the whole format. Restart Chargle and the pack will show up in the list.
 
 The [Microsoft Store](https://apps.microsoft.com/detail/9pp0t5vtmsc2) is the easiest way to get it. It is free, and updates arrive on their own.
 
-From a terminal, use winget:
+From a terminal, use winget, which installs the same Store build:
 
 ```bash
-winget install Arihant25.Chargle
+winget install 9PP0T5VTMSC2
 ```
 
 For the portable build, download the zip from [Releases](../../releases), extract it anywhere, and run `Chargle.exe`. It is self-contained, so there is nothing else to install first. The trade-off is that the download is fairly large.

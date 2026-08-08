@@ -547,7 +547,7 @@
   deskOsd.style.setProperty("--osd-accent", COLOURS[0].hex);
   deskOsd.style.setProperty("--osd-fg", foregroundOn(COLOURS[0].hex));
 
-  /* --- the four pages ----------------------------------------------------- */
+  /* --- the five pages ----------------------------------------------------- */
 
   var SHOTS = {
     sound: {
@@ -559,6 +559,11 @@
       file: "screenshot-screen.png",
       alt: "The On screen page, with settings for how much the panel says, its colour, where it appears and how long it stays",
       cap: "How much the panel says, what colour it is, where it sits and how long it stays"
+    },
+    battery: {
+      file: "screenshot-battery.png",
+      alt: "The Battery page, showing the charged and low milestones with their levels, how each one announces itself, and which sound it uses",
+      cap: "Full and low, each with its own level and its own sound, chiming or showing the panel"
     },
     rules: {
       file: "screenshot-rules.png",
