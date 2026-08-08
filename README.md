@@ -19,7 +19,7 @@ That is it. Windows still does not have this built in, which is odd once you get
 
 * Comes with eight built-in sound packs
 * Can show an optional on-screen indicator in a few different styles and positions
-* Can also play sounds for battery full and battery low
+* Can announce battery full and battery low, with a chime, the on-screen panel, or both, and its own sound for each
 * Stays quiet during Do Not Disturb, screen sharing, and full-screen apps
 * Lets you use your own audio files if you do not like the built-in ones
 * Supports light mode, dark mode, or following the Windows theme

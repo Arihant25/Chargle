@@ -76,6 +76,7 @@ public partial class App : Application
 
         Settings.Changed += settings => Audio.KeepWarm = settings.InstantMode;
         Watcher.Reacted += OnReacted;
+        Watcher.MilestoneReached += OnMilestoneReached;
 
         ViewModel = new MainViewModel(this);
 
@@ -150,8 +151,44 @@ public partial class App : Application
         Dispatcher.TryEnqueue(() => ShowIndicator(state));
     }
 
-    /// <summary>Shows the heads-up panel. Must be called on the UI thread.</summary>
-    public void ShowIndicator(PowerState state)
+    /// <summary>
+    /// A milestone the user asked to see. If they also asked to hear it, the watcher has already
+    /// played that on the thread the event arrived on.
+    ///
+    /// Not gated on <see cref="ChargleSettings.ShowVisualIndicator"/>: that switch is about the
+    /// cable moving, and a milestone asking for a panel has already said so on its own page.
+    /// </summary>
+    private void OnMilestoneReached(MilestoneResult result)
+    {
+        var settings = Settings.Current;
+
+        var alert = result.Milestone == BatteryMilestone.Full
+            ? settings.FullChargeAlert
+            : settings.LowBatteryAlert;
+
+        if (alert == MilestoneAlert.Chime) return;
+        if (settings.RespectDoNotDisturb && Presence.ShouldStayQuiet()) return;
+
+        Dispatcher.TryEnqueue(() => ShowIndicator(
+            charged: result.Milestone == BatteryMilestone.Full,
+            PowerStrings.MilestoneHeadline(result.Milestone),
+            PowerStrings.MilestoneDetail(result.Milestone, result.Percent)));
+    }
+
+    /// <summary>Shows the heads-up panel for the current power state. Must be called on the UI thread.</summary>
+    public void ShowIndicator(PowerState state) => ShowIndicator(
+        state.Source == PowerSource.Ac,
+        PowerStrings.Headline(state.Source),
+        PowerStrings.Detail(state));
+
+    /// <summary>
+    /// Shows the heads-up panel. Must be called on the UI thread.
+    ///
+    /// <paramref name="charged"/> only decides whether the badge is tinted or grey. Colour here
+    /// means "there is power in it", which is true of a connected charger and of a full battery
+    /// alike, and false of both an unplugged laptop and one about to run out.
+    /// </summary>
+    private void ShowIndicator(bool charged, string headline, string detail)
     {
         try
         {
@@ -163,9 +200,9 @@ public partial class App : Application
 
             var settings = Settings.Current;
             _indicator.Show(
-                state.Source == PowerSource.Ac,
-                PowerStrings.Headline(state.Source),
-                PowerStrings.Detail(state),
+                charged,
+                headline,
+                detail,
                 settings.IndicatorPlacement,
                 TimeSpan.FromSeconds(settings.IndicatorSeconds),
                 settings.IndicatorStyle,

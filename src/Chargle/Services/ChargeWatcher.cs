@@ -20,6 +20,16 @@ public enum CueOutcome
 
 public sealed record CueResult(Cue Cue, CueOutcome Outcome, double ReactionMs, DateTimeOffset At);
 
+/// <summary>A battery level worth saying something about.</summary>
+public enum BatteryMilestone
+{
+    Full,
+    Low,
+}
+
+/// <summary>A milestone that has just been crossed, and whether it made a sound.</summary>
+public sealed record MilestoneResult(BatteryMilestone Milestone, int Percent, bool Chimed);
+
 /// <summary>
 /// The policy layer: decides whether a power event should make a sound, and if so which one.
 ///
@@ -55,6 +65,9 @@ public sealed class ChargeWatcher : IDisposable
     /// <summary>Raised after every power transition, played or not. Fires on a system thread.</summary>
     public event Action<CueResult>? Reacted;
 
+    /// <summary>Raised when a battery milestone is crossed. Fires on a system thread.</summary>
+    public event Action<MilestoneResult>? MilestoneReached;
+
     public CueResult? LastResult { get; private set; }
 
     /// <summary>Plays a single cue on demand. Ignores every suppression rule.</summary>
@@ -63,6 +76,17 @@ public sealed class ChargeWatcher : IDisposable
         pack.Load();
         var sound = cue == Cue.Plug ? pack.Plug : pack.Unplug;
         if (sound is not null) _audio.Play(sound, _settings.Current.Volume);
+    }
+
+    /// <summary>
+    /// Plays whatever a milestone is currently set to play, so you can hear the choice instead of
+    /// waiting a few hours for the battery to get there. Ignores every suppression rule, as
+    /// previews do.
+    /// </summary>
+    public void PreviewMilestone(BatteryMilestone milestone)
+    {
+        StopPreview();
+        if (ResolveMilestone(milestone) is { } sound) _audio.Play(sound, _settings.Current.Volume);
     }
 
     /// <summary>
@@ -156,7 +180,7 @@ public sealed class ChargeWatcher : IDisposable
             if (!_announcedFull)
             {
                 _announcedFull = true;
-                Play(Cue.Plug, 0);
+                Announce(BatteryMilestone.Full, state);
             }
         }
         else if (state.BatteryPercent < settings.FullChargePercent - 3)
@@ -174,13 +198,71 @@ public sealed class ChargeWatcher : IDisposable
             if (!_announcedLow)
             {
                 _announcedLow = true;
-                Play(Cue.Unplug, 0);
+                Announce(BatteryMilestone.Low, state);
             }
         }
         else if (state.BatteryPercent > settings.LowBatteryPercent + 3)
         {
             _announcedLow = false;
         }
+    }
+
+    /// <summary>
+    /// Says the milestone however the user asked to be told.
+    ///
+    /// Only the sound happens here. Showing the panel needs the UI thread and a window, and this
+    /// runs on the power notification thread, so that half goes out as an event for App to pick up.
+    /// </summary>
+    private void Announce(BatteryMilestone milestone, PowerState state)
+    {
+        var alert = AlertFor(milestone);
+
+        bool chimed = alert is MilestoneAlert.Chime or MilestoneAlert.Both
+                      && PlayMilestone(milestone);
+
+        MilestoneReached?.Invoke(new MilestoneResult(milestone, state.BatteryPercent, chimed));
+    }
+
+    private MilestoneAlert AlertFor(BatteryMilestone milestone) => milestone == BatteryMilestone.Full
+        ? _settings.Current.FullChargeAlert
+        : _settings.Current.LowBatteryAlert;
+
+    /// <summary>
+    /// Deliberately does not consult PlayOnPlug and PlayOnUnplug. Those two are about the cable
+    /// moving, and a milestone has its own switch. Turning off the connect chime should not
+    /// silently take the full-battery chime with it, which is what used to happen.
+    /// </summary>
+    private bool PlayMilestone(BatteryMilestone milestone)
+    {
+        var settings = _settings.Current;
+
+        if (settings.IsMutedNow) return false;
+        if (settings.RespectDoNotDisturb && Presence.ShouldStayQuiet()) return false;
+
+        if (ResolveMilestone(milestone) is not { } sound) return false;
+
+        _audio.Play(sound, settings.Volume);
+        return true;
+    }
+
+    /// <summary>
+    /// The half of a pack that suits the news: the rising sound for a full battery, the falling
+    /// one for a flat one. With no pack chosen it borrows the charger's, so the feature works the
+    /// moment it is switched on and only asks a question of people who want to answer it.
+    /// </summary>
+    private CachedSound? ResolveMilestone(BatteryMilestone milestone)
+    {
+        var settings = _settings.Current;
+
+        string chosen = milestone == BatteryMilestone.Full
+            ? settings.FullChargePackId
+            : settings.LowBatteryPackId;
+
+        var pack = _library.Find(chosen) ?? _library.Find(settings.PackId) ?? _library.Packs.FirstOrDefault();
+        if (pack is null) return null;
+
+        pack.Load();
+        return milestone == BatteryMilestone.Full ? pack.Plug : pack.Unplug;
     }
 
     private CueOutcome Play(Cue cue, long eventTimestamp)

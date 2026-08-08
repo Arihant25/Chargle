@@ -83,6 +83,19 @@ public enum IndicatorStyle
     Minimal,
 }
 
+/// <summary>How a battery milestone announces itself.</summary>
+[JsonConverter(typeof(JsonStringEnumConverter<MilestoneAlert>))]
+public enum MilestoneAlert
+{
+    /// <summary>A sound and nothing else. What milestones have always done.</summary>
+    Chime,
+
+    /// <summary>The on-screen panel and nothing else, for a milestone you want to see but not hear.</summary>
+    Indicator,
+
+    Both,
+}
+
 /// <summary>Everything the user can change. Serialised verbatim to settings.json.</summary>
 public sealed class ChargleSettings
 {
@@ -123,11 +136,23 @@ public sealed class ChargleSettings
     /// <summary>Light, dark, or whatever Windows is currently using.</summary>
     public AppTheme Theme { get; set; } = AppTheme.System;
 
-    /// <summary>Chime once when the battery reaches full. 0 disables.</summary>
+    /// <summary>Announce once when the battery reaches full. 0 disables.</summary>
     public int FullChargePercent { get; set; }
 
-    /// <summary>Chime once when the battery falls to this level on battery power. 0 disables.</summary>
+    /// <summary>Announce once when the battery falls to this level on battery power. 0 disables.</summary>
     public int LowBatteryPercent { get; set; }
+
+    public MilestoneAlert FullChargeAlert { get; set; } = MilestoneAlert.Chime;
+    public MilestoneAlert LowBatteryAlert { get; set; } = MilestoneAlert.Chime;
+
+    /// <summary>
+    /// The pack a milestone borrows its sound from, or empty to use whatever the charger is set
+    /// to. Kept separate from <see cref="PackId"/> because a milestone is a different kind of
+    /// news: the sound that suits a cable moving is often not the one you want for "you are about
+    /// to run out".
+    /// </summary>
+    public string FullChargePackId { get; set; } = "";
+    public string LowBatteryPackId { get; set; } = "";
 
     /// <summary>Set by "Mute for an hour" in the tray menu.</summary>
     public DateTimeOffset? MutedUntilUtc { get; set; }

@@ -14,6 +14,21 @@ public static class PowerStrings
         _ => "Power state unknown",
     };
 
+    public static string MilestoneHeadline(BatteryMilestone milestone) => milestone switch
+    {
+        BatteryMilestone.Full => "Battery charged",
+        _ => "Battery low",
+    };
+
+    public static string MilestoneDetail(BatteryMilestone milestone, int percent)
+    {
+        if (percent < 0) return "";
+
+        return milestone == BatteryMilestone.Full
+            ? $"Reached {percent}%"
+            : $"{percent}% remaining";
+    }
+
     public static string Detail(PowerState state)
     {
         bool hasBattery = state.BatteryPercent >= 0;

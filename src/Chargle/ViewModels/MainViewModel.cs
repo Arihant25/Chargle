@@ -76,6 +76,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
 
         Packs = [.. app.Library.Packs.Select(p => new PackViewModel(p))];
         _selectedPack = Packs.FirstOrDefault(p => p.Id == app.Settings.Current.PackId) ?? Packs.FirstOrDefault();
+        RebuildMilestoneSoundOptions();
 
         app.Power.PowerSourceChanged += OnPowerChanged;
         app.Power.BatteryChanged += OnBatteryChanged;
@@ -116,6 +117,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
 
         _selectedPack = Packs.FirstOrDefault(p => p.Id == selectedId) ?? Packs.FirstOrDefault();
         Notify(nameof(SelectedPack));
+
+        RebuildMilestoneSoundOptions();
 
         foreach (var pack in Packs) pack.NotifyDecoded();
     }
@@ -271,6 +274,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
         set { _app.Settings.Update(s => s.StartHidden = value); Notify(); }
     }
 
+    // ---------------------------------------------------------- battery milestones
+
     public bool FullChargeEnabled
     {
         get => _app.Settings.Current.FullChargePercent > 0;
@@ -303,6 +308,101 @@ public sealed class MainViewModel : INotifyPropertyChanged
     {
         get => _app.Settings.Current.LowBatteryPercent is var p and > 0 ? p : 20;
         set { _app.Settings.Update(s => s.LowBatteryPercent = (int)value); Notify(); }
+    }
+
+    public int FullChargeAlertIndex
+    {
+        get => (int)_app.Settings.Current.FullChargeAlert;
+        set
+        {
+            if (value < 0) return;
+            _app.Settings.Update(s => s.FullChargeAlert = (MilestoneAlert)value);
+            Notify();
+            Notify(nameof(FullChargeMakesSound));
+        }
+    }
+
+    public int LowBatteryAlertIndex
+    {
+        get => (int)_app.Settings.Current.LowBatteryAlert;
+        set
+        {
+            if (value < 0) return;
+            _app.Settings.Update(s => s.LowBatteryAlert = (MilestoneAlert)value);
+            Notify();
+            Notify(nameof(LowBatteryMakesSound));
+        }
+    }
+
+    /// <summary>False when the milestone only shows a panel, which is when picking a sound for it
+    /// would be offering a choice that does nothing.</summary>
+    public bool FullChargeMakesSound => _app.Settings.Current.FullChargeAlert != MilestoneAlert.Indicator;
+
+    public bool LowBatteryMakesSound => _app.Settings.Current.LowBatteryAlert != MilestoneAlert.Indicator;
+
+    /// <summary>
+    /// The pack list as a milestone sees it: every pack, preceded by the option to just follow
+    /// whatever the charger is set to. Rebuilt with the library, because a pack imported on the
+    /// Sound page should be choosable here without restarting.
+    /// </summary>
+    public ObservableCollection<string> MilestoneSoundOptions { get; } = [];
+
+    public int FullChargeSoundIndex
+    {
+        get => SoundIndexOf(_app.Settings.Current.FullChargePackId);
+        set
+        {
+            if (value < 0) return;
+            _app.Settings.Update(s => s.FullChargePackId = PackIdAt(value));
+            Notify();
+        }
+    }
+
+    public int LowBatterySoundIndex
+    {
+        get => SoundIndexOf(_app.Settings.Current.LowBatteryPackId);
+        set
+        {
+            if (value < 0) return;
+            _app.Settings.Update(s => s.LowBatteryPackId = PackIdAt(value));
+            Notify();
+        }
+    }
+
+    public void PreviewMilestone(BatteryMilestone milestone) => _app.Watcher.PreviewMilestone(milestone);
+
+    private void RebuildMilestoneSoundOptions()
+    {
+        MilestoneSoundOptions.Clear();
+        MilestoneSoundOptions.Add("Same as the charger");
+        foreach (var pack in _app.Library.Packs) MilestoneSoundOptions.Add(pack.Name);
+
+        // Refilling the list resets whatever the combo boxes had selected, so say what the
+        // selection is again now that there is something for it to point at.
+        Notify(nameof(FullChargeSoundIndex));
+        Notify(nameof(LowBatterySoundIndex));
+    }
+
+    /// <summary>Empty means "follow the charger", which is the first entry rather than a pack.</summary>
+    private int SoundIndexOf(string packId)
+    {
+        if (string.IsNullOrEmpty(packId)) return 0;
+
+        var packs = _app.Library.Packs;
+        for (int i = 0; i < packs.Count; i++)
+        {
+            if (string.Equals(packs[i].Id, packId, StringComparison.OrdinalIgnoreCase)) return i + 1;
+        }
+
+        // The pack was deleted from the sounds folder. Fall back to the charger's rather than
+        // leaving the combo box pointing at nothing.
+        return 0;
+    }
+
+    private string PackIdAt(int index)
+    {
+        int pack = index - 1;
+        return pack >= 0 && pack < _app.Library.Packs.Count ? _app.Library.Packs[pack].Id : "";
     }
 
     // ------------------------------------------------------------ run at login

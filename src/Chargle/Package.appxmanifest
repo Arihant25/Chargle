@@ -16,7 +16,7 @@
   <Identity
     Name="ArihantTripathy.Chargle"
     Publisher="CN=72BAF5FF-24DB-44E5-91AB-EF577484B99F"
-    Version="1.0.1.0" />
+    Version="1.1.0.0" />
 
   <Properties>
     <DisplayName>Chargle</DisplayName>

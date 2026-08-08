@@ -41,44 +41,6 @@
                 Margin="0,10,0,0"
                 HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Stretch"
-                Header="Battery milestones">
-                <StackPanel Spacing="16" Padding="0,4,0,4">
-
-                    <Grid ColumnDefinitions="*,Auto">
-                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="1">
-                            <TextBlock Text="Chime when the battery is charged" />
-                            <TextBlock Style="{StaticResource MutedTextStyle}" Text="Once per charge, not every time the level twitches." />
-                        </StackPanel>
-                        <ToggleSwitch Grid.Column="1" Style="{StaticResource RowToggleStyle}" AutomationProperties.Name="Chime when the battery is charged" IsOn="{x:Bind Vm.FullChargeEnabled, Mode=TwoWay}" />
-                    </Grid>
-
-                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" Visibility="{x:Bind ShowIf(Vm.FullChargeEnabled), Mode=OneWay}">
-                        <Slider Grid.Column="0" Minimum="50" Maximum="100" StepFrequency="5" AutomationProperties.Name="Battery level to chime at" Value="{x:Bind Vm.FullChargePercent, Mode=TwoWay}" />
-                        <TextBlock Grid.Column="1" VerticalAlignment="Center" MinWidth="42" TextAlignment="Right"
-                                   Style="{StaticResource MutedTextStyle}" Text="{x:Bind Percent(Vm.FullChargePercent), Mode=OneWay}" />
-                    </Grid>
-
-                    <Grid ColumnDefinitions="*,Auto">
-                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="1">
-                            <TextBlock Text="Chime when the battery runs low" />
-                            <TextBlock Style="{StaticResource MutedTextStyle}" Text="Only while running on battery." />
-                        </StackPanel>
-                        <ToggleSwitch Grid.Column="1" Style="{StaticResource RowToggleStyle}" AutomationProperties.Name="Chime when the battery runs low" IsOn="{x:Bind Vm.LowBatteryEnabled, Mode=TwoWay}" />
-                    </Grid>
-
-                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" Visibility="{x:Bind ShowIf(Vm.LowBatteryEnabled), Mode=OneWay}">
-                        <Slider Grid.Column="0" Minimum="5" Maximum="50" StepFrequency="5" AutomationProperties.Name="Low battery level to chime at" Value="{x:Bind Vm.LowBatteryPercent, Mode=TwoWay}" />
-                        <TextBlock Grid.Column="1" VerticalAlignment="Center" MinWidth="42" TextAlignment="Right"
-                                   Style="{StaticResource MutedTextStyle}" Text="{x:Bind Percent(Vm.LowBatteryPercent), Mode=OneWay}" />
-                    </Grid>
-
-                </StackPanel>
-            </Expander>
-
-            <Expander
-                Margin="0,4,0,0"
-                HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Stretch"
                 Header="Startup and speed">
                 <StackPanel Spacing="16" Padding="0,4,0,4">
 

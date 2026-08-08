@@ -117,7 +117,7 @@ public sealed partial class IndicatorWindow : Window
                 BoltBox.Width = 18;
                 BoltBox.Height = 20;
                 Layout.Padding = new Thickness(11);
-                return MeasureContent(minimumWidth: 0);
+                return MeasureContent(minimumWidth: 0, fallback: new SizeInt32(64, 64));
 
             case IndicatorStyle.Compact:
                 Words.Visibility = Visibility.Visible;
@@ -128,7 +128,7 @@ public sealed partial class IndicatorWindow : Window
                 BoltBox.Width = 12;
                 BoltBox.Height = 14;
                 Layout.Padding = new Thickness(13, 10, 17, 10);
-                return MeasureContent(minimumWidth: 180);
+                return MeasureContent(minimumWidth: 132, fallback: new SizeInt32(150, 48));
 
             default:
                 Words.Visibility = Visibility.Visible;
@@ -139,7 +139,7 @@ public sealed partial class IndicatorWindow : Window
                 BoltBox.Width = 14;
                 BoltBox.Height = 16;
                 Layout.Padding = new Thickness(14, 11, 18, 11);
-                return MeasureContent(minimumWidth: 230);
+                return MeasureContent(minimumWidth: 164, fallback: new SizeInt32(190, 58));
         }
     }
 
@@ -150,8 +150,17 @@ public sealed partial class IndicatorWindow : Window
     /// "Plugged in", and a column of nothing where the words would be in the mark-only style. A
     /// panel that hugs its contents is both smaller and better looking, and it stays correct when
     /// the text changes length.
+    ///
+    /// <paramref name="minimumWidth"/> is a floor against a silly narrow box, not a target. It
+    /// used to be set well above what the text actually needs, which put the wide empty margin
+    /// back on the right of every panel and undid the point of measuring at all.
+    ///
+    /// <paramref name="fallback"/> is used only when the measurement comes back as nothing, which
+    /// happens on a window that has never been laid out. It has to be a whole size rather than
+    /// the minimum width and a guess at the height. The mark-only style has a minimum width of
+    /// zero, quite legitimately, and would otherwise fall back to a window with no width at all.
     /// </summary>
-    private SizeInt32 MeasureContent(int minimumWidth)
+    private SizeInt32 MeasureContent(int minimumWidth, SizeInt32 fallback)
     {
         // InvalidateMeasure first, and it matters. Measure caches on the constraint it was given,
         // so asking twice with the same infinite size returns the first answer. The first ask
@@ -161,7 +170,7 @@ public sealed partial class IndicatorWindow : Window
         Layout.Measure(new Windows.Foundation.Size(double.PositiveInfinity, double.PositiveInfinity));
         var desired = Layout.DesiredSize;
 
-        if (desired.Width < 4 || desired.Height < 4) return new SizeInt32(minimumWidth, 60);
+        if (desired.Width < 4 || desired.Height < 4) return fallback;
 
         // A few pixels of slack. Text measured before its font is fully resolved can come back
         // very slightly narrow, and being a hair too small is the difference between the text

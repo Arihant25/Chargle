@@ -101,7 +101,7 @@
             </Border>
 
             <TextBlock Style="{StaticResource MutedTextStyle}" Margin="2,10,0,0"
-                       Text="The panel also stays hidden when Do Not Disturb is on, if that rule is switched on under Rules." />
+                       Text="The panel also stays hidden when Do Not Disturb is on, if that rule is switched on under Rules. These settings apply to the panel a battery milestone shows too, which has its own switch under Battery." />
 
         </StackPanel>
     </ScrollViewer>
